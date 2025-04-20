@@ -1,9 +1,11 @@
-import { getWorkFlowsForUser } from "@/src/infrastructure";
+import { getWorkflows } from "@/src/infrastructure";
 import {
   Alert,
   Skeleton,
   AlertTitle,
   AlertDescription,
+  CreateWorkflow,
+  WorkflowCard,
 } from "@/src/presentation/components";
 import { AlertCircle, InboxIcon } from "lucide-react";
 import { Suspense } from "react";
@@ -19,7 +21,8 @@ const UserWorkflowsSkeleton = () => {
 };
 
 const UserWorkflows = async () => {
-  const workflows = await getWorkFlowsForUser();
+  const workflows = await getWorkflows();
+
   if (!workflows) {
     return (
       <Alert variant="destructive">
@@ -44,11 +47,18 @@ const UserWorkflows = async () => {
             Click the button below to create your first workflow
           </p>
         </div>
+        <CreateWorkflow triggerText="Create your first workflow" />
       </div>
     );
   }
 
-  return <div></div>;
+  return (
+    <div className="grid grid-cols-1 gap-4">
+      {workflows.map((workflow) => (
+        <WorkflowCard key={workflow.id} workflow={workflow} />
+      ))}
+    </div>
+  );
 };
 
 export default function WorkflowsPage() {
@@ -59,6 +69,7 @@ export default function WorkflowsPage() {
           <h1 className="text-3xl font-bold">Workflows</h1>
           <p className="text-muted-foreground">Manage your workflows</p>
         </div>
+        <CreateWorkflow />
       </div>
 
       <div className="h-full py-6">
