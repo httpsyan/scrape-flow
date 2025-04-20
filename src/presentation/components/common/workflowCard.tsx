@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/src/infrastructure";
 import Link from "next/link";
+import { useState } from "react";
+import { DeleteWorkflow } from "./deleteWorkflow";
 
 import {
   DropdownMenu,
@@ -22,8 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { TooltipWrapper } from "./tooltipWrapper";
-import { useState } from "react";
-import { DeleteWorkflow } from "./deleteWorkflow";
+
 const statusColors = {
   [WorkflowStatus.DRAFT]: "bg-yellow-400 text-yellow-600",
   [WorkflowStatus.PUBLISHED]: "bg-primary",
@@ -31,6 +32,7 @@ const statusColors = {
 
 export const WorkflowCard = ({ workflow }: { workflow: Workflow }) => {
   const isDraft = workflow.status === WorkflowStatus.DRAFT;
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   return (
     <Card className="border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-md transition-all duration-300 dark:shadow-primary/30">
@@ -74,55 +76,36 @@ export const WorkflowCard = ({ workflow }: { workflow: Workflow }) => {
             <ShuffleIcon size={16} />
             Edit
           </Link>
-          <WorkflowActions
-            workflowName={workflow.name}
+          <DeleteWorkflow
             workflowId={workflow.id}
+            workflowName={workflow.name}
+            open={showDeleteDialog}
+            onOpenChange={setShowDeleteDialog}
           />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <TooltipWrapper content="More actions">
+                  <div className="flex items-center justify-center w-full h-full">
+                    <MoreVertical size={18} />
+                  </div>
+                </TooltipWrapper>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-red-500 hover:text-red-600 cursor-pointer"
+                onSelect={() => setShowDeleteDialog(true)}
+              >
+                <TrashIcon size={16} className="text-red-500" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardContent>
     </Card>
-  );
-};
-
-const WorkflowActions = ({
-  workflowName,
-  workflowId,
-}: {
-  workflowName: string;
-  workflowId: string;
-}) => {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-  return (
-    <>
-      <DeleteWorkflow
-        workflowId={workflowId}
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        workflowName={workflowName}
-      />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm">
-            <TooltipWrapper content="More actions">
-              <div className="flex items-center justify-center w-full h-full">
-                <MoreVertical size={18} />
-              </div>
-            </TooltipWrapper>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="text-red-500 hover:text-red-600 cursor-pointer"
-            onSelect={() => setShowDeleteDialog(true)}
-          >
-            <TrashIcon size={16} className="text-red-500" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
   );
 };
