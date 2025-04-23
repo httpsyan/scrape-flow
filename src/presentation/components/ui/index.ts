@@ -14,3 +14,4 @@ export * from "./sonner";
 export * from "./card";
 export * from "./tooltip";
 export * from "./alert-dialog";
+export * from "./badge";
